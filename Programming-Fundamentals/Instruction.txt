@@ -1,0 +1,19 @@
+                                 Welcome to our Game
+ 
+          A game made by the collective effort of Ahmadx3 and Kamran.
+ 
+          :::::::::::::::::::::: Instructions :::::::::::::::::::::::
+
+
+ 
+For left movement >>>>> Left Arrow key
+ 
+For right movement >>>>> Right Arrow key
+ 
+For Fire Hit >>>>>>>>>>>>> Space Bar 
+
+If enemy hits the doted line you will lose your one life
+
+Note : you have only three lives 
+
+Press any key to play the game

@@ -1,0 +1,49 @@
+#include<iostream>
+using namespace std;
+int c_length(char[]);
+bool c_compare(char ch1[], char ch2[]);
+int main()
+{
+	char ch1[] = "\0";
+	char ch2[] = "\0";
+	cout << "enter character array 1 = " << endl;
+	cin.getline(ch1, 10);
+	cout << "enter character array 2 = " << endl;
+	cin.getline(ch2, 10);
+	if (c_compare(ch1, ch2) == true)
+	{
+		cout << "both arrays are same" << endl;
+	}
+	else
+	{
+		cout << "both arrays are not same" << endl;
+	}
+
+}
+int c_length(char ch[])
+{
+	int count = 0;
+	for (int i = 0; ch[i] != '\0'; i++)
+	{
+		count++;
+	}
+	return count;
+}
+bool c_compare(char ch1[], char ch2[])
+{
+	if (c_length(ch1) != c_length(ch2))
+	{
+		return false;
+	}
+	else
+	{
+		for (int i = 0; ch1[i] != '\0'; i++)
+		{
+			if (ch1[i] != ch2[i])
+			{
+				return false;
+			}
+		}
+	}
+	return true;
+}

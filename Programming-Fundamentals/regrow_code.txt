@@ -1,0 +1,41 @@
+#include<iostream>
+#include<fstream>
+using namespace std;
+int* regrow(int[], int, int);
+void copy_data(int[], int[], int);
+int main()
+{
+	ifstream fin;
+	int num = 0, size = 0 ;
+	int* arr = NULL;
+	arr = new int[1];
+	fin.open("data.txt");
+	fin >> num;
+	arr[0] = num;
+	size++;
+	while (fin >> num)
+	{
+		arr = regrow(arr, size, num);
+		size++;
+	}
+
+	for (int i = 0; i < size; i++)
+	{
+		cout << arr[i] << " ";
+	}
+}
+void copy_data(int old_array[], int new_array[], int size)
+{
+	for (int i = 0; i < size; i++)
+	{
+		new_array[i] = old_array[i];
+	}
+}
+int* regrow(int old_array[], int size, int value)
+{
+	int* new_array = new int[size + 1];
+	copy_data(old_array, new_array,size);
+	new_array[size] = value;
+	delete[] old_array;
+	return new_array;
+}

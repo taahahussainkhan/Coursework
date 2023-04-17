@@ -1,0 +1,115 @@
+
+
+Introduction to Computing
+
+
+
+
+Lab Manual ITC LAB 8
+
+
+
+D      I    "
+
+
+
+
+
+Faculty of Information Technology UCP Lahore Pakistan
+
+
+
+Lab 08
+
+Topic   Review session
+
+
+Find the Errors in Following C++ Programs and write their output:
+1. #incIude<iostream.h>
+#incIude<conio.h> int main()
+
+
+cout<<"HeIIo Compiler, I am C++"; getch();
+
+
+2. #incIude<iostream.h> #incIude<conio.h>
+int main()
+
+char str[20];
+cout<<"Enter your name : "; cin>>str;
+cout<<"HeIIo, "<<str<<" Sir, You are at codescracker.com"; getch();
+
+
+3. int sum,sub,muIt,div,module; int a,b;
+cout<<"Enter value of a =" cin<<a;
+cout<<"Enter value of b =; cin<<b;
+sum=a+b;
+sub=a-bmuIt=a*b; div=a/'b' moduIe=a%b;
+
+
+4. #incIude<iostream.h> #incIude<conio.h> void main()
+
+int num = 34;
+cout<<"Guess a Number : ";
+
+
+
+if(num>10 && num<100) cout<<"What a mind!!";
+else
+(     cout<<"Opps..!!";
+}  getch();
+
+
+5. #incIude<iostream.h> #incIude<conio.h> void main()
+
+int a=10, b; cout<<"Enter 10:"; cin>>b;
+if(b==a)
+
+cout<<"What a good Employee!!";
+
+else
+
+cout<<"Sorry!, you are not selected..!!"; getch();
+suppose user input value of b is 10.001
+
+6. if(Ascii value VariabIe>=97 & Ascii value VariabIe<=122) cout<<"\nYou have entered a small 
+letter";
+eIseif(Ascii value VariabIe>=65 && Ascii value VariabIe<=90)
+
+
+cout<<"\nYou have entered a capital letter";
+
+elseif (Ascii_vaIue_VariabIe>=0 && Ascii_vaIue_VariabIe>=47; Ascii value VariabIe>=54 & Ascii value 
+VariabIe<=64; Ascii value VariabIe>=91 & Ascii value VariabIe<=96 ;
+I I Ascii value VariabIe>=123 & Ascii value VariabIe<=127) cout<<"\nYou have entered a special 
+v_charac_varibIe";
+
+
+
+
+
+elseif (Ascii value VariabIe>=47 & Ascii value VariabIe<=57) cout<<"\nYou have entered a digit ";
+
+
+
+7. cout>>"pIease enter a sentences of your on choose: "; cout>>"\n";
+gets(Words); for(number=0;Words[number]!='\0'++number)
+
+if(Words[number]=='a’ OR Words[number]=='e' OR Words[number]=='i’ OR Words[number]=='o'
+OR Words[number]=='u' OR Words[number]=='A' OR Words[number]=='E' OR Words[number]=='I'
+OR Words[number]=='O' OR Words[number]=='U’)
+++vowel words;
+else if((Words[number]>='a'&& Words[number]<='z') 0 | (Words[number]>='A'&& Words[number]
+
+++Consonants;
+else if(Words[number]>='0' & Words[number]<='9’)
+++digit_words;
+else if (Words[number]==’ ’)
+++spaces;
+
+8. The population of a town A is less than the population of town B. However, the population of 
+town A is growing faster than the population of town B. Write a program that prompts the user to 
+enter the population and growth rate of each town. The program outputs after how many years the 
+population of town A will be greater than or equal to the population of town B and the populations 
+of both the towns at that time. (A sample input is: Population of town A= 5000, growth rate of town 
+A = 4%, population of town B=8000, and growth rate of town B = 2%.)

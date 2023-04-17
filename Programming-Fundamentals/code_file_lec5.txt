@@ -1,0 +1,86 @@
+#include<iostream>
+#include<fstream>
+using namespace std;
+int main()
+{	
+	char name[50];
+	int age, row;
+	float gpa;
+	ofstream fout;
+	cout << "How many records of Student you want to add?" << endl;
+	cin >> row;
+	fout.open("test.txt");
+	for (int i = 1; i <= row; i++)
+	{
+		cout << "Enter Student Name " << endl;
+		cin.ignore();
+		cin.getline(name, 49);
+		cout << "Enter Student age " << endl;
+		cin >> age;
+		cout << "Enter Student gpa " << endl;
+		cin >> gpa;
+		cout << "Name = " << name << " Age = " << age << " GPA = " << gpa << endl;
+		fout << name << " " << age << " " << gpa << endl;
+		
+	
+	}
+	cout << "data has been saved on file created !!" << endl;
+	fout.close();
+}
+
+#include<iostream>
+#include<fstream>
+using namespace std;
+int main()
+{
+	ifstream fin;
+	char name[50] = "\0";
+	int age = 0;
+	float gpa = 10;
+	fin.open("C:\\Users\\junaid.zaffar\\source\\repos\\Project2\\Project2\\test.txt");
+	for (int i = 1; i <= 4; i++)
+	{
+		if (fin.is_open())
+		{
+			fin >> name;
+			fin >> age;
+			fin >> gpa;
+			cout << "Name = " << name << " Age = " << age << " Gpa = " << gpa << endl;
+		}
+		else
+		{
+			cout << "not found" << endl;
+		}
+	}
+	
+	fin.close();
+}
+
+#include<iostream>
+#include<fstream>
+using namespace std;
+int main()
+{
+	ifstream fin;
+	char name[50] = "\0";
+	int age = 0;
+	float gpa = 10;
+	fin.open("C:\\Users\\junaid.zaffar\\source\\repos\\Project2\\Project2\\test.txt");
+	while (!fin.eof())
+	{
+		if (!fin.is_open())
+		{
+			cout << "file doesnt exit" << endl;
+		}
+		else
+		{
+
+			fin >> name;
+			fin >> age;
+			fin >> gpa;
+			cout << "Name = " << name << " Age = " << age << " Gpa = " << gpa << endl;
+		}
+
+	}
+	fin.close();
+}
