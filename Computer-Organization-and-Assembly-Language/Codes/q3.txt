@@ -1,0 +1,92 @@
+.model small
+
+
+
+.stack 100h
+
+
+
+.data
+
+arr dw 2,4,8,54,-60,71,89,94,-40,67
+even_array dw 10 dup(?)
+gr dw 10 dup(?)
+sum dw 0
+
+.code
+
+   mov ax,@data
+   mov ds,ax
+   
+   mov dx,0
+   mov si,0
+   mov cx,10
+   
+   l1:
+   
+   mov ax,[arr+si]
+   ror ax,1
+   jc odd
+   jnc even
+   
+   odd:
+   jmp end1
+   
+   even:
+   mov bx,[arr+si]
+   mov [even_array+di],bx
+   inc di
+   inc di
+   jmp end1
+   
+   end1:
+   inc si
+   inc si
+   
+
+
+ loop l1  
+   
+   mov cx,10
+   mov si,0
+   mov di,0
+   
+   l2:
+   mov ax,[even_array+si]
+   cmp ax,25
+   ja great
+   jb small
+   
+   great:
+   mov bx,[even_array+si]
+   mov [gr+di],bx
+   inc di
+   inc di
+   jmp end2:
+    
+    small:
+    jmp end2
+   
+   end2:
+   inc si
+   inc si
+    
+   loop l2 
+   
+   
+   mov ax,0
+   mov cx,5
+   mov si,0 
+   mov bx,0
+   
+   l3:
+   
+   mov ax,[gr+si]
+   add bx,ax    
+   
+   mov [sum],bx
+     
+   inc si
+   inc si
+   loop l3
+   hlt

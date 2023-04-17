@@ -1,0 +1,48 @@
+/*												Quiz#6
+Write a program in C++ that declares and initializes an integer array of 80 elements. Using inline assembly language, the program shifts the even numbers in the array one bit to the right.
+*/
+
+#include<iostream>
+using namespace std;
+int main()
+{
+	int arr[80] = {}, one[80],res[80];
+	for (int i = 0; i < 80; i++)
+	{
+		arr[i] = rand() % 10;
+		one[i] = 1;
+	}
+	for (int i = 0; i < 80; i++)
+	{
+		cout << arr[i] << " ";
+	}
+	for (int i = 0; i <80; i++)
+	{
+		__asm{
+			mov esi,i
+			pxor mm7, mm7;
+			movd mm0, [one + esi * 4];
+			movd mm1, [arr+esi*4];
+			movq mm2, mm1;
+			pand mm1, mm0;
+			pcmpeqb mm1, mm7
+			pand mm2, mm1;
+			psrld mm2, 1 //rotating right
+			movd[res + esi * 4], mm2
+
+		}
+	}
+	for (int i = 0; i < 80; i++) {
+		if (res[i]!=0)
+		arr[i] = res[i];
+	}
+	cout << "\nafter" << endl;
+	for (int i = 0; i < 80; i++)
+	{
+		
+		cout << arr[i]<<" ";
+	}
+
+
+
+}
