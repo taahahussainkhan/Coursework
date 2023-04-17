@@ -1,0 +1,229 @@
+//1. A program that counts the number of vowels in a given string statement (DIY problem)
+
+#include <iostream>
+using namespace std;
+int main()
+{
+	int i, vow = 0;
+	char str[100];
+	cout << "Enter a sentence: ";
+	cin.getline(str, 100);
+	for (i = 0; i < 100; i++)
+	{
+		if (str[i] == 'a' || str[i] == 'e' || str[i] == 'i' || str[i] == 'o' || str[i] == 'u')
+			vow++;
+	}
+	cout << vow << endl;
+	return 0;
+}//by me
+#include <iostream>
+using namespace std;
+int main()
+{
+	int j, a= 0,e=0,i=0,o=0,u=0;
+	char str[100];
+	cout << "Enter a sentence: ";
+	cin.getline(str, 100);
+	for (j = 0; str[j] !='\0'; j++)
+	{
+		if (str[j] == 'a' || str[j] == 'A')
+			a++;
+		if (str[j] == 'e' || str[j] == 'E')
+			e++;
+		if (str[j] == 'i' || str[j] == 'I')
+			i++;
+		if (str[j] == 'o' || str[j] == 'O')
+			o++;
+		if (str[j] == 'u' || str[j] == 'U')
+			u++;
+	}
+	cout <<"a="<< a<< endl;
+	cout <<"e="<< e << endl;
+	cout <<"i="<< i << endl;
+	cout <<"o="<< o << endl;
+	cout <<"u="<< u << endl;
+	return 0;
+}//by me
+//2. A program that prints the binary of the no input
+#include<iostream>
+using namespace std;
+int main()
+{
+    int input,i;
+    bool bin[8]={};
+ 
+    cout<<"Input a number between 0 and 255: ";
+    cin>>input;
+    
+    for(i=0;i<8;i++)
+    {
+        bin[i]=input%2;
+        input=input/2;
+    }
+        
+        cout<<"\nThe binary of given input is: ";
+    for(i=0;i<8;i++)
+    {
+    cout<<bin[i];    
+    }
+    return 0;
+}
+
+
+
+
+//3. A program that finds a substring in a string
+#include<iostream>
+using namespace std;
+#define XX 50
+int main()
+{
+	char str1[XX], str2[XX / 2];
+	cout << "Enter a line to save: ";
+	cin.getline(str1, XX);
+	cout << "Enter a sub-string to search in line: ";
+	cin.getline(str2, XX / 2);
+
+	int count = sizeof(str2), a = 0, lengthstr2=0,startindex=-1;
+
+	for (int i = 0; str2[i] != '\0'; i++)
+		lengthstr2++;
+
+
+
+	for (int i = 0; str1[i] != '\0'; i++)
+	{
+		if (str2[0] == str1[i])
+		{
+			startindex++;
+			a++;
+			for (int j = 1; str2[j] != '\0'; j++)
+			{
+				if (str2[j] == str1[j + i])
+				{
+					a++;
+
+				}
+			}
+
+		}
+	}
+	if (a== lengthstr2)
+		cout << str2 << " found from index "<<startindex<< "to index "<<startindex+lengthstr2;
+	system("pause");
+	return 0;
+}
+
+
+//4. A program for that generates random numbers and stores in character array 
+//and finds the second smallest character
+
+#include<iostream>
+#include<time.h>
+#define MX 15
+using namespace std;
+int main()
+{
+	char arr1[MX], fmin, smin;
+	int  i = 0;
+	srand(time(0));
+	cout << "The random generated characters are:\n";
+	while (i < MX)// generate random characters
+	{
+		arr1[i] = rand();
+		if (arr1[i] >= 65 && arr1[i] <= 90)
+		{
+			cout << arr1[i] << endl;
+			i++;
+		}
+		else
+			continue;
+
+	}
+	fmin = smin = 'Z';
+	cout << "The second minimum characters is:\n";
+	for (i = 0; i < MX;i++)
+	{
+		if (arr1[i] < fmin)
+		{
+			smin = fmin;
+			fmin = arr1[i];
+		}
+		else 
+		if (arr1[i] < smin && arr1[i] != fmin)
+			smin = arr1[i];
+	}
+	cout << smin<<endl;
+	system("pause");
+	return 0;
+}
+
+
+//5. A program that copies one string to another
+#include<iostream>
+using namespace std;
+int main()
+{
+	char str1[100], str2[100];
+	int i;
+	cout << "Enter a line to save: ";
+	cin.getline(str1, 100);
+
+	for (i = 0; str1[i] != '\0'; i++)
+	{
+		str2[i] = str1[i];
+	}
+	str2[i] = '\0';
+
+	cout << "Original Line: "<< str1<<endl;
+	cout << "Copied Line: " << str2<<endl;
+
+	system("pause");
+	return 0;
+}
+
+//6. A program that inputs one line, converts capital to small amd small to capital letter
+#include<iostream>
+using namespace std;
+int main()
+{
+	char str1[100];
+	int i;
+	cout << "Enter a line to: ";
+	cin.getline(str1, 100);
+
+	for (i = 0; str1[i] != '\0'; i++)
+	{
+		if (str1[i] >= 65 && str1[i] <= 90)
+		str1[i] = str1[i]+32;
+		if (str1[i] >= 97 && str1[i] <= 112)
+			str1[i] = str1[i] - 32;
+
+	}
+
+	cout << "Inverted Line: " << str1<<endl;
+
+	system("pause");
+	return 0;
+}
+
+//7. A program to find the actual length of the input string 
+#include<iostream>
+using namespace std;
+int main()
+{
+	char str1[100];
+	int i,length=0;
+	cout << "Enter a line to: ";
+	cin.getline(str1, 100);
+
+	for (i = 0; str1[i] != '\0'; i++)
+	{
+		length++;
+	}
+
+	cout << "Length of the String is: " << length <<endl;
+
+	system("pause");
+	return 0;
+}
