@@ -1,0 +1,75 @@
+#include <iostream>
+using namespace std;
+
+
+///%%%%%%%%%%%%%%%% Template Class %%%%%%%%%%%%%%%% 
+template <class T>
+class Stack
+{
+private:
+	T* arr;
+	int maxSize;
+	int currentSize;
+public:
+	void push(T); // push Value
+	bool isFull();
+	T Sum();
+	Stack(int);
+};
+
+template <class T>
+Stack<T>::Stack(int s)
+{
+	arr = new T[s];
+	currentSize = 0;
+	maxSize = s;
+}
+///%%%%%%%%%%%%%%%% Class Functions Implementation %%%%%%%%%%%%%%%%
+
+template <class T>
+bool Stack<T>::isFull()
+{
+	return Stack<T>::currentSize == Stack<T>::maxSize;
+}
+
+template <class T>
+void Stack<T>::push(T v)
+{
+	if (isFull())
+		cout << "Stack is Full" << endl;
+
+	else
+	{
+		Stack<T>::arr[Stack<T>::currentSize] = v;
+		Stack<T>::currentSize++;
+	}
+}
+
+template <class T>
+T Stack<T>::Sum()
+{
+	int sum = 0;
+	for (int i = 0; i < Stack<T>::currentSize; i++)
+	{
+		sum += Stack<T>::arr[i];
+	}
+	return sum;
+}
+
+
+///%%%%%%%%%%%%%%%% Main Part %%%%%%%%%%%%%%%%
+int main()
+{
+	Stack<int> s(6);
+
+	s.push(1);
+	s.push(2);
+	s.push(3);
+	s.push(0);
+	s.push(-3);
+	s.push(4);
+	
+	int sum = s.Sum();
+	cout << "Sum of all Elements of Stack is  =  " << sum << endl;
+	return 0;
+}
