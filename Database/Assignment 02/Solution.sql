@@ -265,18 +265,40 @@ WHERE service_id NOT IN (
 
 #14- Retrieve the names and total transaction amounts for all the transactions in the month of January.
   
+ ALTER TABLE Transaction
+ ADD name varchar(30);
+SELECT name, SUM(total_amount) AS total_transaction_amount
+FROM transaction
+WHERE date like 'January%'
+GROUP BY name;
+
+  
 #15- Retrieve the names and transaction dates of all transactions between January 1, 2022 and March 31, 2022  
+
+SELECT name, SUM(total_amount) AS total_transaction_amount
+FROM transaction
+WHERE date BETWEEN 'January 1,2022' AND 'March 31, 2022'
+GROUP BY name;  
   
 #16- Retrieve the names and descriptions of all products that have been reviewed by customers
 # with a rating of 3 or higher.
 
+SELECT
+  name,
+  description
+FROM Product
+JOIN Product_Review
+ON Product.product_id = Product_Review.product_id
+WHERE rating >= 3;
+
+
 #17- Add a new column “in_stock” (BOOLEAN) to the product table.
+
 ALTER TABLE Product
 ADD in_stock BOOlEAN;
 
-SET SQL_SAFE_UPDATES = 1;
-
 #18- Retrieve all data of service provided by ABC Services.
+
 SELECT *
 FROM Service
 WHERE provider_id = 'ABC Services';
@@ -284,10 +306,31 @@ WHERE provider_id = 'ABC Services';
 #19- Retrieve the information of the products that have not been sold in the past month and
 # currently in stock.
 
+SELECT * FROM product
+WHERE NOT EXISTS (
+    SELECT
+      *
+    FROM transaction
+    WHERE
+      product_id = product.product_id
+      AND date > CURRENT_DATE - INTERVAL 1 MONTH
+  )
+  AND in_stock = 1;
+
 #20- Retrieve the names and costs of all the services that have been provided by provides in the
 # “House Keeping” and Electronics categories.
 
+SELECT name, cost FROM service
+WHERE
+  category_id IN ('House Keeping', 'Electronics');
+
+
 #21- Retrieve the names and job titles of all employees who were hired in 2022.
+
+ALTER TABLE Employee
+ADD hire_date DATE;
+SELECT name, job_title FROM Employee
+WHERE hire_date LIKE '%2022' ;
 
 #22- Retrieve the names and job titles of all those employees who worked on transactions
 # involving products in the Home Goods Category order by names.
@@ -301,3 +344,6 @@ WHERE provider_id = 'ABC Services';
 #25- Retrieve the information of all products and services that cost more than $500.
 
 #26- Drop the “Product_Review” table from the database
+DROP TABLE Product_Review;
+
+SET SQL_SAFE_UPDATES = 1;
