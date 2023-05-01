@@ -214,7 +214,7 @@ RENAME TO Product_Supplier;
 #6- Change the data type of the “date” column in Transaction table from DATE to DATETIME.
 
 ALTER TABLE Transaction
-ALTER COLUMN date DATETIME NOT NULL;
+MODIFY COLUMN date DATETIME NOT NULL;
 
 #7- Set the default value of the “rating” column in Product_Review table to 0.alter
 	
@@ -248,11 +248,56 @@ WHERE rating < 3;
 DELETE FROM Product
 WHERE unit_price < 5;
 
+#12- Update the “total_amount” of all transactions by adding 5% discount for customers with a “customer_id” of 3.
 
+UPDATE Transaction
+SET total_amount = total_amount * 0.95  
+WHERE customer_id = 3;
 
+#13 -Delete all rows from “Service_Transaction” table where the “service_id” is not in the House Keeping or Maintenance categories.
 
+DELETE FROM Service_Transaction
+WHERE service_id NOT IN (
+  SELECT service_id
+  FROM Service
+  WHERE category_id IN ('House Keeping', 'Maintenance')
+);
 
+#14- Retrieve the names and total transaction amounts for all the transactions in the month of January.
+  
+#15- Retrieve the names and transaction dates of all transactions between January 1, 2022 and March 31, 2022  
+  
+#16- Retrieve the names and descriptions of all products that have been reviewed by customers
+# with a rating of 3 or higher.
+
+#17- Add a new column “in_stock” (BOOLEAN) to the product table.
+ALTER TABLE Product
+ADD in_stock BOOlEAN;
 
 SET SQL_SAFE_UPDATES = 1;
 
+#18- Retrieve all data of service provided by ABC Services.
+SELECT *
+FROM Service
+WHERE provider_id = 'ABC Services';
 
+#19- Retrieve the information of the products that have not been sold in the past month and
+# currently in stock.
+
+#20- Retrieve the names and costs of all the services that have been provided by provides in the
+# “House Keeping” and Electronics categories.
+
+#21- Retrieve the names and job titles of all employees who were hired in 2022.
+
+#22- Retrieve the names and job titles of all those employees who worked on transactions
+# involving products in the Home Goods Category order by names.
+
+#23- Retrieve distinct customer id and customer name who have made transactions in April 2022
+# order by customer id.
+
+#24- Retrieve the names and contact information of all the suppliers who supply products that
+# are currently out of stock.
+
+#25- Retrieve the information of all products and services that cost more than $500.
+
+#26- Drop the “Product_Review” table from the database
