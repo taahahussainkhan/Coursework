@@ -140,11 +140,8 @@ CREATE TABLE Supplier_Region_Business_Unit (
 #1- Create a new table called “Order_Item” with columns “order_item_id” (primary key) and “quantity”.
 
 CREATE TABLE Order_Item (
-  order_item_id VARCHAR(8) NOT NULL UNIQUE   PRIMARY KEY,
-  quantity INT NOT NULL
-  #transaction_id VARCHAR(8) NOT NULL,
- # product_id VARCHAR(8) NOT NULL,
- # service_id VARCHAR(8) NOT NULL
+  order_item_id INT PRIMARY KEY,
+  quantity DOUBLE NOT NULL
 );
 
 #2- Modify the table “Order_Item” by adding the columns “transaction_id” (foreign key
@@ -154,25 +151,18 @@ CREATE TABLE Order_Item (
 
 
 ALTER TABLE Order_Item
-ADD transaction_id VARCHAR(8),
-ADD CONSTRAINT fk_order_item_transaction_id
-FOREIGN KEY (transaction_id)
-REFERENCES Transaction(transaction_id);
-
-
-ALTER TABLE Order_Item
-ADD product_id VARCHAR(8),
-ADD CONSTRAINT fk_order_item_product_id
-FOREIGN KEY (product_id)
-REFERENCES Product(product_id);
-
-
-
-
-ALTER TABLE Order_Item
-ADD service_id VARCHAR(8),
-ADD CONSTRAINT fk_order_item_service_id
-FOREIGN KEY (service_id)
+ADD 	transaction_id	 	int,
+ADD 	product_id			int,
+ADD		service_id			int,
+ADD		FOREIGN KEY(transaction_id)
+REFERENCES	Transaction(transaction_id)
+ON DELETE CASCADE
+ON UPDATE CASCADE,
+ADD		FOREIGN KEY(product_id)
+REFERENCES	Product(product_id)
+ON DELETE CASCADE
+ON UPDATE CASCADE,
+ADD FOREIGN KEY(service_id)
 REFERENCES Service(service_id);
 
 
