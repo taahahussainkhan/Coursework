@@ -169,7 +169,7 @@ REFERENCES Service(service_id);
 #3- Add a new column called “unit_price” to the Products table.
 
 ALTER TABLE Product
-ADD unit_price varchar(8);
+ADD unit_price DOUBLE;
 
 
 #4- Create a new table called “Product_Review” with columns “review_id” (primary key),
@@ -177,22 +177,14 @@ ADD unit_price varchar(8);
 #referencing Customer.customer_id), “rating” and “review_text”.
 
 CREATE TABLE Product_Review (
-	review_id VARCHAR(8) NOT NULL UNIQUE   PRIMARY KEY,
-    product_id VARCHAR(8) NOT NULL,
-    customer_id VARCHAR(8) NOT NULL,
-   
-   CONSTRAINT fk_product_review_product_id
-    FOREIGN KEY (product_id)
-    REFERENCES Product(product_id),
+review_id INT PRIMARY KEY,
+product_id INT,
+customer_id INT,
+rating int,
+review_text varchar(50),
 
-    
-   CONSTRAINT fk_product_review_customer_id
-    FOREIGN KEY (customer_id)
-    REFERENCES Customer(customer_id),
-
-    
-    rating int NOT NULL,
-    review_text  	varchar(125)
+FOREIGN KEY (product_id) REFERENCES Product(product_id) ON UPDATE CASCADE ON DELETE CASCADE,
+FOREIGN KEY (customer_id) references Customer(customer_id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 #5- Rename the “Supplier_Product” table to “Product_Supplier”.
