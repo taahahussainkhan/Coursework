@@ -1,0 +1,51 @@
+#include <iostream>
+
+void printPieces(int pieces[], int currentPieces[], int currentLength, int target) {
+    if (target == 0) {
+        for (int i = 0; i < currentLength; i++) {
+            std::cout << currentPieces[i];
+            if (i != currentLength - 1)
+                std::cout << "+";
+        }
+        std::cout << " = " << currentLength << std::endl;
+        return;
+    }
+    for (int i = 0; i < 3; i++) {  // Assuming there are only 3 pieces: 1, 2, 3
+        if (target >= pieces[i]) {
+            currentPieces[currentLength] = pieces[i];
+            printPieces(pieces, currentPieces, currentLength + 1, target - pieces[i]);
+            currentPieces[currentLength] = 0;
+        }
+    }
+}
+
+int maxPieces(int pieces[], int length, int n) {
+    if (n == 0)
+        return 0;
+    
+    int maxCount = -1;
+    
+    // Recursive case: Try making cuts of each piece and find the maximum
+    for (int i = 0; i < length; i++) {
+        if (n >= pieces[i]) {
+            int count = maxPieces(pieces, length, n - pieces[i]);
+            if (count != -1)
+                maxCount = std::max(maxCount, count + 1);
+        }
+    }
+    
+    return maxCount;
+}
+
+int main() {
+    int n = 5;
+    int pieces[] = {1, 2, 3};
+    int currentPieces[100] = {0};
+    
+    std::cout << "The ribbon can be cut into: " << std::endl;
+    printPieces(pieces, currentPieces, 0, n);
+    int maxNumPieces = maxPieces(pieces, 3, n);
+    
+    std::cout << "The maximum number of pieces the ribbon can be cut into is: " << maxNumPieces << std::endl;
+    return 0;
+}

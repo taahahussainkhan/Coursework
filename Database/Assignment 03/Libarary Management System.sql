@@ -165,17 +165,23 @@ VALUES
 ('R0009', '2', 'This book was a disappointment. I expected more from the author.', '2023-06-09', '9', '9');
 
 
+#------------------------1
+SELECT b.book_title, a.author_name
+FROM Books AS b
+JOIN Authors AS a
+ON b.author_id = a.author_id;
 
-# QUERIES
-#---------------------------------------------------1
-SELECT book_id, book_title, author_id, author_name
-FROM Books
-INNER JOIN Authors
-ON Books.author_id = Authors.author_id;
+#------------------------2
+SELECT a.author_name,
+CASE WHEN b.book_title IS NULL	THEN "No_books"
+ELSE b.book_title
+END AS book_title
+FROM Authors AS a
+LEFT JOIN Books AS b
+ON a.author_id = b.author_id;
 
 
-
-
+#------------------------3
 
 
 
