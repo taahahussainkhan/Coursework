@@ -183,6 +183,15 @@ ON a.author_id = b.author_id;
 
 #------------------------3
 
+SELECT b.book_title, COUNT(bb.book_id) AS borrow_count
+FROM Books AS b
+JOIN Book_Borrowed AS bb
+ON b.book_id = bb.book_id
+GROUP BY b.book_id
+ORDER BY borrow_count DESC
+LIMIT 5;
+
+
 
 
 
