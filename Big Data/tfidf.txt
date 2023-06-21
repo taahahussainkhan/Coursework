@@ -1,0 +1,40 @@
+sent 1 = good boy
+sent 2 = good girl
+sent 3 = boy girl good
+
+
+words   frequency
+good 	3
+girl    2
+boy     2 
+
+Term Frequency = number of repition of words in sentence / number of words in sentence
+-----------------
+	s1	s2	s3
+good    1/2	1/2    1/3
+boy	1/2	0	1/3
+girl	0	1/2	1/3
+
+
+Inverse Document Frequency
+-------------------------
+IDF = log(total number of sentences / number of sentences containing word)
+
+word    IDF
+good    log(3/3)=0
+girl    log(3/2)
+boy	log(3/2)
+
+
+TF*IDF
+------
+
+	good	boy		girl
+s1	0	1/2*log(3/2) 	0
+s2	0	0		1/2*log(3/2)
+s3	0	1/3*log(3/2)	1/3*log(3/2)
+
+
+
+
+
