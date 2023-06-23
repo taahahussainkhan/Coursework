@@ -1,0 +1,14 @@
+John, a dedicated professional, can be reached at john@example.com,
+which serves as his primary email address l1f20bscs0001@ucp.edu.pk for any inquiries or communication. Alongside,
+here are some interesting websites to explore: https://www.example.com, http://google.com,
+and www.yahoo.com. l1f20bscs0301@umt.edu.pk If you wish to connect via phone, the valid phone numbers to reach out 
+to him include +92-300-8597654 or the simpler format 123-456-7890. While exploring a sentence,
+you may notice multiple words that start with capital letters, indicating their significance. 
+In a given text, you can easily replace the word 'old' with 'new' to update the context accordingly. 
+For numerical analysis, the string contains various numbers such as 123, 45.6, -7.89, and 0, 
+each carrying its own meaning. Evaluating the string further, it consists of alphanumeric characters 
+like Abc123, demonstrating the fusion of letters and numbers. Additionally, the provided HTML document 
+with tags encapsulates the structure of a webpage, including elements like <html>, <body>, <h1>, and <p>. 
+Exploring linguistic patterns, we can extract words ending with 'ing' in a sentence, such as running, 
+swimming, and jumping, which signify ongoing actions. Finally, removing whitespace characters from a 
+string transforms 'Hello World!' into 'HelloWorld!', ensuring a clean and compact representation.
