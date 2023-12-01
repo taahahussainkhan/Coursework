@@ -1,0 +1,57 @@
+Answer).
+
+Given intial temperature = To = 81,
+
+Constant room temperature = Rt = 61.
+
+We will use Newton law of cooling here,
+
+T = (To - Rt)*(e^rt) + Rt.
+
+Two hours later, temperature of the corpse dropped to 74.
+
+T(2) = (81-61)*(er*2) + 61 = 74.
+
+20(e^(2r)) = 74-61 = 13.
+
+e^(2r) = 13/20 = 0.65
+
+Talking ln on both sides,
+
+lne*^(2r) = ln(0.65).
+
+We know that ln(e^a) = a.
+
+So,
+
+2r = ln(0.65).
+
+r = -0.215391458
+
+T(t) = 20*e^(-0.215391458*t)  + 61.
+
+We know that normal temperature is 98.6,
+
+We will find the value of t by substituting T(t) = 98.6
+
+98.6 = 20*e^(-0.215391458*t) + 61.
+
+20*e^-0.215391458*t = 98.6-61 = 37.6
+
+e^-0.215391458*t = 37.6/20 = 1.88
+
+-0.215391458*t = ln(1.88).
+
+t = -2.93
+
+b).
+
+So, death happened 2.93 hours before 12 am.
+
+There are 60 minutes in an hour,
+
+60*0.93 = 55.8
+
+So, time is 2 hours and 55.8 minutes.
+
+12 am - 2 hours and 55.8 minutes = 9:04 pm.
