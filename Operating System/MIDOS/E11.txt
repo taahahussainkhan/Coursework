@@ -1,0 +1,305 @@
+E11 version 1:
+
+
+QUESTION 1:
+
+ Q1: Write a C program that inputs an array of integers of size 10 using command line arguments and create two child processes (Hint: You can use global array). The first child process will calculate the sum of array using the functions given below and send the result to parent. The second child process will find the average of all numbers the array by calling the functions given below and send the result to parent. The parent processes will print average and min value on the terminal. [7]
+void Sum ();
+void average (); 
+
+SOLUTION:
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+// Global array
+int numbers[10];
+
+// Function declarations
+void Sum();
+void average();
+
+int main(int argc, char *argv[]) {
+    if (argc < 11) {
+        fprintf(stderr, "Usage: %s <num1> <num2> ... <num10>\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    // Convert command-line arguments to integers and store in the global array
+    for (int i = 0; i < 10; ++i) {
+        numbers[i] = atoi(argv[i + 1]);
+    }
+
+    pid_t child_pid_sum, child_pid_avg;
+
+    // Fork the first child process to calculate the sum
+    child_pid_sum = fork();
+
+    if (child_pid_sum == -1) {
+        perror("Fork failed");
+        exit(EXIT_FAILURE);
+    }
+
+    if (child_pid_sum == 0) {  // Child process for sum
+        Sum();
+        exit(EXIT_SUCCESS);
+    } else {  // Parent process
+        // Fork the second child process to calculate the average
+        child_pid_avg = fork();
+
+        if (child_pid_avg == -1) {
+            perror("Fork failed");
+            exit(EXIT_FAILURE);
+        }
+
+        if (child_pid_avg == 0) {  // Child process for average
+            average();
+            exit(EXIT_SUCCESS);
+        } else {  // Parent process
+            // Wait for both child processes to complete
+            waitpid(child_pid_sum, NULL, 0);
+            waitpid(child_pid_avg, NULL, 0);
+
+            // Print the results
+            printf("Average: %f\n", (float)numbers[0]);
+            printf("Sum: %d\n", numbers[1]);
+        }
+    }
+
+    return 0;
+}
+
+// Function to calculate the sum of the array
+void Sum() {
+    int sum = 0;
+    for (int i = 0; i < 10; ++i) {
+        sum += numbers[i];
+    }
+    numbers[1] = sum;  // Store the sum in the global array
+}
+
+// Function to calculate the average of the array
+void average() {
+    int sum = 0;
+    for (int i = 0; i < 10; ++i) {
+        sum += numbers[i];
+    }
+    numbers[0] = (float)sum / 10.0;  // Store the average in the global array
+}
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+QUESTION 2:
+
+Write a program that implements the commands ls | grep doc | sort -n +4. The program should create 3 Childs and every child run a command.   
+
+SOLUTION:
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+int main() {
+    int pipe_fd_ls_grep[2];
+    int pipe_fd_grep_sort[2];
+    pid_t child_pid_ls, child_pid_grep, child_pid_sort;
+
+    // Create pipes
+    if (pipe(pipe_fd_ls_grep) == -1 || pipe(pipe_fd_grep_sort) == -1) {
+        perror("Pipe creation failed");
+        exit(EXIT_FAILURE);
+    }
+
+    // Fork the first child process to execute 'ls'
+    child_pid_ls = fork();
+
+    if (child_pid_ls == -1) {
+        perror("Fork failed");
+        exit(EXIT_FAILURE);
+    }
+
+    if (child_pid_ls == 0) {  // Child process for 'ls'
+        close(pipe_fd_ls_grep[0]);  // Close unused read end
+        close(pipe_fd_grep_sort[0]); // Close unused read end
+        close(pipe_fd_grep_sort[1]); // Close unused write end
+
+        // Redirect standard output to the first pipe
+        dup2(pipe_fd_ls_grep[1], STDOUT_FILENO);
+        close(pipe_fd_ls_grep[1]);
+
+        // Execute the 'ls' command
+        execlp("ls", "ls", NULL);
+
+        perror("execlp failed");
+        exit(EXIT_FAILURE);
+    } else {  // Parent process
+        close(pipe_fd_ls_grep[1]);  // Close unused write end
+
+        // Fork the second child process to execute 'grep'
+        child_pid_grep = fork();
+
+        if (child_pid_grep == -1) {
+            perror("Fork failed");
+            exit(EXIT_FAILURE);
+        }
+
+        if (child_pid_grep == 0) {  // Child process for 'grep'
+            close(pipe_fd_ls_grep[0]);  // Close unused read end
+            close(pipe_fd_grep_sort[0]); // Close unused read end
+
+            // Redirect standard input from the first pipe
+            dup2(pipe_fd_ls_grep[0], STDIN_FILENO);
+            close(pipe_fd_ls_grep[0]);
+
+            // Redirect standard output to the second pipe
+            dup2(pipe_fd_grep_sort[1], STDOUT_FILENO);
+            close(pipe_fd_grep_sort[1]);
+
+            // Execute the 'grep' command
+            execlp("grep", "grep", "doc", NULL);
+
+            perror("execlp failed");
+            exit(EXIT_FAILURE);
+        } else {  // Parent process
+            close(pipe_fd_grep_sort[1]); // Close unused write end
+
+            // Fork the third child process to execute 'sort -n +4'
+            child_pid_sort = fork();
+
+            if (child_pid_sort == -1) {
+                perror("Fork failed");
+                exit(EXIT_FAILURE);
+            }
+
+            if (child_pid_sort == 0) {  // Child process for 'sort -n +4'
+                // Redirect standard input from the second pipe
+                dup2(pipe_fd_grep_sort[0], STDIN_FILENO);
+                close(pipe_fd_grep_sort[0]);
+
+                // Execute the 'sort -n +4' command
+                execlp("sort", "sort", "-n", "+4", NULL);
+
+                perror("execlp failed");
+                exit(EXIT_FAILURE);
+            } else {  // Parent process
+                close(pipe_fd_grep_sort[0]); // Close unused read end
+
+                // Wait for all child processes to complete
+                waitpid(child_pid_ls, NULL, 0);
+                waitpid(child_pid_grep, NULL, 0);
+                waitpid(child_pid_sort, NULL, 0);
+            }
+        }
+    }
+
+    return 0;
+}
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+QUESTION 3: Write a C program that creates an array of size [1000], to enter the size using command line arguments and populates it with random integers between 1 and 100. Now, it creates two child processes. The first child process finds how many prime numbers are there among first 500 number while the second child process finds the number of prime numbers among the remaining 500 numbers [6.5]
+
+SOLUTION:
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <stdbool.h>
+#include <time.h>
+
+// Function declarations
+void countPrimes(int start, int end, int* primeCount);
+
+int main(int argc, char *argv[]) {
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s <array_size>\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    int arraySize = atoi(argv[1]);
+
+    if (arraySize != 1000) {
+        fprintf(stderr, "Array size must be 1000.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    int numbers[arraySize];
+
+    // Seed the random number generator
+    srand((unsigned int)time(NULL));
+
+    // Populate the array with random integers between 1 and 100
+    for (int i = 0; i < arraySize; ++i) {
+        numbers[i] = rand() % 100 + 1;
+    }
+
+    pid_t child_pid1, child_pid2;
+    int primeCount1, primeCount2;
+
+    // Fork the first child process
+    child_pid1 = fork();
+
+    if (child_pid1 == -1) {
+        perror("Fork failed");
+        exit(EXIT_FAILURE);
+    }
+
+    if (child_pid1 == 0) {  // Child process 1
+        countPrimes(0, arraySize / 2, &primeCount1);
+        exit(EXIT_SUCCESS);
+    } else {  // Parent process
+        // Fork the second child process
+        child_pid2 = fork();
+
+        if (child_pid2 == -1) {
+            perror("Fork failed");
+            exit(EXIT_FAILURE);
+        }
+
+        if (child_pid2 == 0) {  // Child process 2
+            countPrimes(arraySize / 2, arraySize, &primeCount2);
+            exit(EXIT_SUCCESS);
+        } else {  // Parent process
+            // Wait for both child processes to complete
+            waitpid(child_pid1, NULL, 0);
+            waitpid(child_pid2, NULL, 0);
+
+            printf("Number of prime numbers in the first 500 elements: %d\n", primeCount1);
+            printf("Number of prime numbers in the remaining 500 elements: %d\n", primeCount2);
+        }
+    }
+
+    return 0;
+}
+
+// Function to check if a number is prime
+bool isPrime(int num) {
+    if (num < 2) {
+        return false;
+    }
+    for (int i = 2; i * i <= num; ++i) {
+        if (num % i == 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
+// Function to count prime numbers in a range
+void countPrimes(int start, int end, int* primeCount) {
+    *primeCount = 0;
+    for (int i = start; i < end; ++i) {
+        if (isPrime(i)) {
+            (*primeCount)++;
+        }
+    }
+}
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

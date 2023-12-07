@@ -1,0 +1,172 @@
+QUESTION 1
+Write a program that takes numbers as command-line arguments. The program then sends these numbers through a pipe to its child process. The child process finds the minimum and maximum numbers and sends them to the parent process. The parent process displays those numbers.
+Example:
+$./a.out 5 4 3 2 1
+Minimum: 1
+Maximum: 5
+
+
+
+SOLUTION:
+
+
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
+
+#define MAX_NUMBERS 100
+
+int main(int argc, char *argv[]) {
+    int numbers[MAX_NUMBERS];
+    int numCount = argc - 1;
+
+    // Check if there are numbers provided as command line arguments
+    if (numCount <= 0 || numCount > MAX_NUMBERS) {
+        fprintf(stderr, "Invalid number of arguments or too many numbers.\n");
+        return EXIT_FAILURE;
+    }
+
+    // Parse numbers from command line arguments
+    for (int i = 0; i < numCount; ++i) {
+        numbers[i] = atoi(argv[i + 1]);
+    }
+
+    // Create a pipe
+    int pipefd[2];
+    if (pipe(pipefd) == -1) {
+        perror("pipe");
+        return EXIT_FAILURE;
+    }
+
+    // Create a child process
+    pid_t childPid = fork();
+
+    if (childPid == -1) {
+        perror("fork");
+        return EXIT_FAILURE;
+    }
+
+    if (childPid == 0) {  // Child process
+        // Close the write end of the pipe in the child process
+        close(pipefd[1]);
+
+        // Find the minimum and maximum numbers
+        int min = numbers[0];
+        int max = numbers[0];
+
+        for (int i = 1; i < numCount; ++i) {
+            if (numbers[i] < min) {
+                min = numbers[i];
+            }
+
+            if (numbers[i] > max) {
+                max = numbers[i];
+            }
+        }
+
+        // Write the minimum and maximum numbers to the pipe
+        write(pipefd[0], &min, sizeof(int));
+        write(pipefd[0], &max, sizeof(int));
+
+        // Close the read end of the pipe
+        close(pipefd[0]);
+
+        // Exit the child process
+        exit(EXIT_SUCCESS);
+    } else {  // Parent process
+        // Close the read end of the pipe in the parent process
+        close(pipefd[0]);
+
+        // Write numbers to the pipe
+        write(pipefd[1], numbers, sizeof(int) * numCount);
+
+        // Close the write end of the pipe
+        close(pipefd[1]);
+
+        // Wait for the child process to finish
+        wait(NULL);
+
+        // Read the minimum and maximum numbers from the pipe
+        int min, max;
+        read(pipefd[0], &min, sizeof(int));
+        read(pipefd[0], &max, sizeof(int));
+
+        // Close the read end of the pipe
+        close(pipefd[0]);
+
+        // Display the minimum and maximum numbers
+        printf("Minimum: %d\n", min);
+        printf("Maximum: %d\n", max);
+    }
+
+    return 0;
+}
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+QUESTION 2 
+Write a program that implements the following command. (Note: create an input.txt file with some multi-line data.)
+$ sort < input.txt | grep "b" > output.txt
+
+
+
+SOLUTION:
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+int main() {
+    int pipe_fd[2];
+    pid_t child_pid;
+
+    // Create a pipe
+    if (pipe(pipe_fd) == -1) {
+        perror("Pipe creation failed");
+        exit(EXIT_FAILURE);
+    }
+
+    // Fork a child process
+    child_pid = fork();
+
+    if (child_pid == -1) {
+        perror("Fork failed");
+        exit(EXIT_FAILURE);
+    }
+
+    if (child_pid == 0) {  // Child process
+        close(pipe_fd[0]);  // Close unused read end
+
+        // Redirect standard output to the pipe
+        dup2(pipe_fd[1], STDOUT_FILENO);
+        close(pipe_fd[1]);
+
+        // Execute the 'sort' command
+        execlp("sort", "sort", "<", "input.txt", NULL);
+
+        perror("execlp failed");
+        exit(EXIT_FAILURE);
+    } else {  // Parent process
+        close(pipe_fd[1]);  // Close unused write end
+
+        // Redirect standard input to the pipe
+        dup2(pipe_fd[0], STDIN_FILENO);
+        close(pipe_fd[0]);
+
+        // Redirect standard output to output.txt
+        freopen("output.txt", "w", stdout);
+
+        // Execute the 'grep' command
+        execlp("grep", "grep", "b", NULL);
+
+        perror("execlp failed");
+        exit(EXIT_FAILURE);
+    }
+
+    return 0;
+}
+

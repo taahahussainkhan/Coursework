@@ -1,0 +1,187 @@
+Question#1 (20 points)
+Write a program that takes numbers via command line arguments. The program then sends these numbers through pipe to its child process. The child process sorts those numbers in ascending order and sends back to the parent process. The parent process displays those numbers.
+Example:
+$./a.out 5 4 3 2 1
+1 2 3 4 5
+
+
+SOL:
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+int main(int argc, char *argv[]) {
+    if (argc < 2) {
+        fprintf(stderr, "Usage: %s <num1> <num2> ... <numN>\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    int num_args = argc - 1;
+    int *numbers = (int *)malloc(num_args * sizeof(int));
+
+    // Convert command-line arguments to integers
+    for (int i = 0; i < num_args; ++i) {
+        numbers[i] = atoi(argv[i + 1]);
+    }
+
+    int pipe_fd[2];
+    if (pipe(pipe_fd) == -1) {
+        perror("Pipe creation failed");
+        exit(EXIT_FAILURE);
+    }
+
+    pid_t child_pid = fork();
+
+    if (child_pid == -1) {
+        perror("Fork failed");
+        exit(EXIT_FAILURE);
+    }
+
+    if (child_pid == 0) {  // Child process
+        close(pipe_fd[0]);  // Close unused read end
+
+        // Redirect standard output to the pipe
+        dup2(pipe_fd[1], STDOUT_FILENO);
+        close(pipe_fd[1]);
+
+        // Execute the 'sort' command
+        execvp("sort", (char *const[]){"sort", NULL});
+
+        perror("execvp failed");
+        exit(EXIT_FAILURE);
+    } else {  // Parent process
+        close(pipe_fd[1]);  // Close unused write end
+
+        // Redirect standard input to the pipe
+        dup2(pipe_fd[0], STDIN_FILENO);
+        close(pipe_fd[0]);
+
+        // Wait for the child process to complete
+        wait(NULL);
+
+        // Display the sorted numbers
+        printf("Sorted Numbers: ");
+        for (int i = 0; i < num_args; ++i) {
+            scanf("%d", &numbers[i]);
+            printf("%d ", numbers[i]);
+        }
+        printf("\n");
+
+        free(numbers);
+    }
+
+    return 0;
+}
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+QUESTION 2:
+Write a program that implements the following command.
+$ ls / | grep "b" | sort -r
+
+
+SOLUTION:
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+int main() {
+    int pipe_fd_ls_grep[2];
+    int pipe_fd_grep_sort[2];
+    pid_t child_pid_ls, child_pid_grep, child_pid_sort;
+
+    // Create pipes
+    if (pipe(pipe_fd_ls_grep) == -1 || pipe(pipe_fd_grep_sort) == -1) {
+        perror("Pipe creation failed");
+        exit(EXIT_FAILURE);
+    }
+
+    // Fork the first child process to execute 'ls'
+    child_pid_ls = fork();
+
+    if (child_pid_ls == -1) {
+        perror("Fork failed");
+        exit(EXIT_FAILURE);
+    }
+
+    if (child_pid_ls == 0) {  // Child process for 'ls'
+        close(pipe_fd_ls_grep[0]);  // Close unused read end
+
+        // Redirect standard output to the first pipe
+        dup2(pipe_fd_ls_grep[1], STDOUT_FILENO);
+        close(pipe_fd_ls_grep[1]);
+
+        // Execute the 'ls' command
+        execlp("ls", "ls", "/", NULL);
+
+        perror("execlp failed");
+        exit(EXIT_FAILURE);
+    } else {  // Parent process
+        close(pipe_fd_ls_grep[1]);  // Close unused write end
+
+        // Fork the second child process to execute 'grep'
+        child_pid_grep = fork();
+
+        if (child_pid_grep == -1) {
+            perror("Fork failed");
+            exit(EXIT_FAILURE);
+        }
+
+        if (child_pid_grep == 0) {  // Child process for 'grep'
+            close(pipe_fd_grep_sort[0]);  // Close unused read end
+            close(pipe_fd_ls_grep[0]);    // Close unused read end
+            close(pipe_fd_ls_grep[1]);    // Close unused write end
+
+            // Redirect standard input from the first pipe
+            dup2(pipe_fd_ls_grep[0], STDIN_FILENO);
+            close(pipe_fd_ls_grep[0]);
+
+            // Redirect standard output to the second pipe
+            dup2(pipe_fd_grep_sort[1], STDOUT_FILENO);
+            close(pipe_fd_grep_sort[1]);
+
+            // Execute the 'grep' command
+            execlp("grep", "grep", "b", NULL);
+
+            perror("execlp failed");
+            exit(EXIT_FAILURE);
+        } else {  // Parent process
+            close(pipe_fd_ls_grep[0]);  // Close unused read end
+            close(pipe_fd_grep_sort[1]); // Close unused write end
+
+            // Fork the third child process to execute 'sort -r'
+            child_pid_sort = fork();
+
+            if (child_pid_sort == -1) {
+                perror("Fork failed");
+                exit(EXIT_FAILURE);
+            }
+
+            if (child_pid_sort == 0) {  // Child process for 'sort -r'
+                // Redirect standard input from the second pipe
+                dup2(pipe_fd_grep_sort[0], STDIN_FILENO);
+                close(pipe_fd_grep_sort[0]);
+
+                // Execute the 'sort -r' command
+                execlp("sort", "sort", "-r", NULL);
+
+                perror("execlp failed");
+                exit(EXIT_FAILURE);
+            } else {  // Parent process
+                close(pipe_fd_grep_sort[0]);  // Close unused read end
+
+                // Wait for all child processes to complete
+                waitpid(child_pid_ls, NULL, 0);
+                waitpid(child_pid_grep, NULL, 0);
+                waitpid(child_pid_sort, NULL, 0);
+            }
+        }
+    }
+
+    return 0;
+}
+

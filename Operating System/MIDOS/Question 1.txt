@@ -1,0 +1,316 @@
+Question 1:                                                                    
+i.The cat command displays contents of an existing file. Use cat command and output redirection operator > in such a way that it would create a non-existing file, and send input from keyboard to that file. (Press Ctrl-D, when you finish) 
+
+ii.Send the output of ls -i command to a existing or non-existing file. 
+iii.Normally, the output of cat command goes to screen, use cat command in such a way that it will send its output to a file instead of screen. 
+iv.The who command sends its output to standard output (screen), redirect standard output to the file users. 
+v.Create three files, num, alpha, and numalpha. Which contains numbers, alphabets, and alphanumeric respectively. Concatenate these three files in a single file all, using some suitable redirection operator. 
+
+SOL:
+
+i) cat > newfile.txt
+2) ls -i > output.txt
+3) cat input.txt > output.txt
+4) who > users
+5) cat num alpha numalpha > all
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Question 2:
+Write a C Program using fork system call to simulate the following scenario.
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
+
+int main() {
+    // Parent A
+    printf("A (PID: %d) is the parent.\n", getpid());
+
+    // First fork - B and C
+    pid_t pid_B = fork();
+
+    if (pid_B == 0) {
+        // Child B
+        printf("B (PID: %d, Parent PID: %d) is created by A.\n", getpid(), getppid());
+
+        // Second fork - D and E
+        pid_t pid_D = fork();
+
+        if (pid_D == 0) {
+            // Child D
+            printf("D (PID: %d, Parent PID: %d) is created by B.\n", getpid(), getppid());
+
+            // Third fork - H
+            pid_t pid_H = fork();
+
+            if (pid_H == 0) {
+                // Child H
+                printf("H (PID: %d, Parent PID: %d) is created by D.\n", getpid(), getppid());
+
+                // Fourth fork - I
+                pid_t pid_I = fork();
+
+                if (pid_I == 0) {
+                    // Child I
+                    printf("I (PID: %d, Parent PID: %d) is created by H.\n", getpid(), getppid());
+                } else {
+                    // Parent H waiting for I
+                    wait(NULL);
+                }
+            } else {
+                // Parent D waiting for H
+                wait(NULL);
+            }
+        } else {
+            // Parent B waiting for D and E
+            wait(NULL);
+
+            // Third fork - F
+            pid_t pid_F = fork();
+
+            if (pid_F == 0) {
+                // Child F
+                printf("F (PID: %d, Parent PID: %d) is created by B.\n", getpid(), getppid());
+            } else {
+                // Parent B waiting for F
+                wait(NULL);
+            }
+        }
+    } else {
+        // Parent A waiting for B and C
+        wait(NULL);
+
+        // Second fork - G
+        pid_t pid_G = fork();
+
+        if (pid_G == 0) {
+            // Child G
+            printf("G (PID: %d, Parent PID: %d) is created by A.\n", getpid(), getppid());
+        } else {
+            // Parent A waiting for G
+            wait(NULL);
+        }
+    }
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+Question3:
+
+sol:
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+
+int main(){
+          int fd1[2];
+          int fd2[2];
+          Pipe(fd1);
+          Pipe(fd2);
+
+ if(fork()==0)
+{
+ dup2(fd[1],1);
+ close(fd[0]); close(fd2[0]);
+ close(fd2[1]);
+
+else
+ { 
+   dup2(fd1[0],0);
+   dup2(fd2[1],1);
+close(fd1[1]); close(fd2[0]);
+
+execlp("grep","passes",NULL);
+
+ }
+ {
+   if(fork==0)
+   {
+     dup2(fd2[0],0);
+     close(fd2[1]); close(fd1[0,1]);
+     execlp("more",NULL);
+   }
+  else
+ {
+   close all ends;
+ }
+
+}
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+int main() {
+    int pipe_fd[2];
+    pid_t child_pid_grep, child_pid_sort;
+
+    // Create a pipe
+    if (pipe(pipe_fd) == -1) {
+        perror("Pipe creation failed");
+        exit(EXIT_FAILURE);
+    }
+
+    // Fork the first child process to execute 'grep'
+    child_pid_grep = fork();
+
+    if (child_pid_grep == -1) {
+        perror("Fork failed");
+        exit(EXIT_FAILURE);
+    }
+
+    if (child_pid_grep == 0) {  // Child process for 'grep'
+        close(pipe_fd[0]);  // Close unused read end
+
+        // Redirect standard input to 'input.txt'
+        freopen("input.txt", "r", stdin);
+
+        // Redirect standard output to the pipe
+        dup2(pipe_fd[1], STDOUT_FILENO);
+        close(pipe_fd[1]);
+
+        // Execute the 'grep' command
+        execlp("grep", "grep", "m", NULL);
+
+        perror("execlp failed");
+        exit(EXIT_FAILURE);
+    } else {  // Parent process
+        close(pipe_fd[1]);  // Close unused write end
+
+        // Fork the second child process to execute 'sort'
+        child_pid_sort = fork();
+
+        if (child_pid_sort == -1) {
+            perror("Fork failed");
+            exit(EXIT_FAILURE);
+        }
+
+        if (child_pid_sort == 0) {  // Child process for 'sort'
+            // Redirect standard input from the pipe
+            dup2(pipe_fd[0], STDIN_FILENO);
+            close(pipe_fd[0]);
+
+            // Redirect standard output to 'output.txt'
+            freopen("output.txt", "w", stdout);
+
+            // Execute the 'sort' command
+            execlp("sort", "sort", NULL);
+
+            perror("execlp failed");
+            exit(EXIT_FAILURE);
+        } else {  // Parent process
+            close(pipe_fd[0]);  // Close unused read end
+
+            // Wait for both child processes to complete
+            waitpid(child_pid_grep, NULL, 0);
+            waitpid(child_pid_sort, NULL, 0);
+        }
+    }
+
+    return 0;
+}
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+QUESTION 4 :
+
+Write a program that takes numbers via command line arguments. The program then sends these numbers through pipe to its child process. The child process sorts those numbers in ascending order and sends back to the parent process. The parent process displays those numbers.
+Example: 
+$./a.out 5 4 3 2 1 
+12345
+
+SOLUTION:
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+int main(int argc, char *argv[]) {
+    if (argc < 2) {
+        fprintf(stderr, "Usage: %s <num1> <num2> ... <numN>\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    int num_args = argc - 1;
+    int *numbers = (int *)malloc(num_args * sizeof(int));
+
+    // Convert command-line arguments to integers
+    for (int i = 0; i < num_args; ++i) {
+        numbers[i] = atoi(argv[i + 1]);
+    }
+
+    int pipe_fd[2];
+    if (pipe(pipe_fd) == -1) {
+        perror("Pipe creation failed");
+        exit(EXIT_FAILURE);
+    }
+
+    pid_t child_pid = fork();
+
+    if (child_pid == -1) {
+        perror("Fork failed");
+        exit(EXIT_FAILURE);
+    }
+
+    if (child_pid == 0) {  // Child process
+        close(pipe_fd[0]);  // Close unused read end
+
+        // Redirect standard output to the pipe
+        dup2(pipe_fd[1], STDOUT_FILENO);
+        close(pipe_fd[1]);
+
+        // Sort the numbers in ascending order
+        for (int i = 0; i < num_args; ++i) {
+            for (int j = i + 1; j < num_args; ++j) {
+                if (numbers[i] > numbers[j]) {
+                    // Swap numbers
+                    int temp = numbers[i];
+                    numbers[i] = numbers[j];
+                    numbers[j] = temp;
+                }
+            }
+        }
+
+        // Display the sorted numbers
+        for (int i = 0; i < num_args; ++i) {
+            printf("%d", numbers[i]);
+        }
+        printf("\n");
+
+        exit(EXIT_SUCCESS);
+    } else {  // Parent process
+        close(pipe_fd[1]);  // Close unused write end
+
+        // Read the sorted numbers from the pipe
+        char sorted_numbers[num_args];
+        read(pipe_fd[0], sorted_numbers, num_args);
+        close(pipe_fd[0]);  // Close read end after reading
+
+        // Display the sorted numbers received from the child process
+        printf("Sorted Numbers: %s\n", sorted_numbers);
+
+        // Wait for the child process to complete
+        wait(NULL);
+    }
+
+    free(numbers);
+    return 0;
+}

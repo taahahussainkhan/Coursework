@@ -1,0 +1,202 @@
+Last one
+
+QUESTION 1:
+Write a C program that receives an array of integers through command-line arguments. The program initiates two child processes. One child determines the count of even numbers within the array and communicates this count to the parent. Simultaneously, the second child identifies the composite numbers in the array, compiles them into a new array, and sends this array back to the parent. The parent process collects and displays both the count of prime numbers and the array containing the identified even numbers from the child processes.
+
+
+SOLUTION1 :
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <stdbool.h>
+
+// Function declarations
+bool isEven(int num);
+bool isComposite(int num);
+void printArray(int arr[], int size);
+
+int main(int argc, char *argv[]) {
+    if (argc < 2) {
+        fprintf(stderr, "Usage: %s <num1> <num2> ... <numN>\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    int num_args = argc - 1;
+    int numbers[num_args];
+
+    // Convert command-line arguments to integers
+    for (int i = 0; i < num_args; ++i) {
+        numbers[i] = atoi(argv[i + 1]);
+    }
+
+    pid_t child_pid_even, child_pid_composite;
+    int evenCount;
+    int compositeArray[num_args];
+    int compositeCount = 0;
+
+    // Fork the first child process to count even numbers
+    child_pid_even = fork();
+
+    if (child_pid_even == -1) {
+        perror("Fork failed");
+        exit(EXIT_FAILURE);
+    }
+
+    if (child_pid_even == 0) {  // Child process for even count
+        evenCount = 0;
+        for (int i = 0; i < num_args; ++i) {
+            if (isEven(numbers[i])) {
+                evenCount++;
+            }
+        }
+        // Send even count to parent using pipe
+        write(STDOUT_FILENO, &evenCount, sizeof(int));
+        exit(EXIT_SUCCESS);
+    } else {  // Parent process
+        // Fork the second child process to find composite numbers
+        child_pid_composite = fork();
+
+        if (child_pid_composite == -1) {
+            perror("Fork failed");
+            exit(EXIT_FAILURE);
+        }
+
+        if (child_pid_composite == 0) {  // Child process for composite numbers
+            for (int i = 0; i < num_args; ++i) {
+                if (isComposite(numbers[i])) {
+                    compositeArray[compositeCount] = numbers[i];
+                    compositeCount++;
+                }
+            }
+            // Send composite array to parent using pipe
+            write(STDOUT_FILENO, compositeArray, compositeCount * sizeof(int));
+            exit(EXIT_SUCCESS);
+        } else {  // Parent process
+            // Wait for both child processes to complete
+            waitpid(child_pid_even, NULL, 0);
+            waitpid(child_pid_composite, NULL, 0);
+
+            // Read even count from the pipe
+            read(STDIN_FILENO, &evenCount, sizeof(int));
+
+            // Read composite array from the pipe
+            read(STDIN_FILENO, compositeArray, compositeCount * sizeof(int));
+
+            // Print the results
+            printf("Even Count: %d\n", evenCount);
+            printf("Composite Numbers: ");
+            printArray(compositeArray, compositeCount);
+        }
+    }
+
+    return 0;
+}
+
+// Function to check if a number is even
+bool isEven(int num) {
+    return num % 2 == 0;
+}
+
+// Function to check if a number is composite
+bool isComposite(int num) {
+    if (num <= 1) {
+        return false;
+    }
+    for (int i = 2; i * i <= num; ++i) {
+        if (num % i == 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// Function to print an array
+void printArray(int arr[], int size) {
+    for (int i = 0; i < size; ++i) {
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
+}
+
+Question 2:
+
+Write a C program that implements the following command: ps -aux | grep "bash" > midterm.txt
+
+
+
+solution 2:
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+int main() {
+    int pipe_fd[2];
+    pid_t child_pid_ps, child_pid_grep;
+
+    // Create a pipe
+    if (pipe(pipe_fd) == -1) {
+        perror("Pipe creation failed");
+        exit(EXIT_FAILURE);
+    }
+
+    // Fork the first child process to execute 'ps -aux'
+    child_pid_ps = fork();
+
+    if (child_pid_ps == -1) {
+        perror("Fork failed");
+        exit(EXIT_FAILURE);
+    }
+
+    if (child_pid_ps == 0) {  // Child process for 'ps -aux'
+        // Redirect standard output to the write end of the pipe
+        dup2(pipe_fd[1], STDOUT_FILENO);
+        close(pipe_fd[0]);
+        close(pipe_fd[1]);
+
+        // Execute the 'ps -aux' command
+        execlp("ps", "ps", "-aux", NULL);
+
+        perror("execlp failed");
+        exit(EXIT_FAILURE);
+    } else {  // Parent process
+        close(pipe_fd[1]);  // Close the write end of the pipe
+
+        // Fork the second child process to execute 'grep "bash"'
+        child_pid_grep = fork();
+
+        if (child_pid_grep == -1) {
+            perror("Fork failed");
+            exit(EXIT_FAILURE);
+        }
+
+        if (child_pid_grep == 0) {  // Child process for 'grep "bash"'
+            // Redirect standard input from the read end of the pipe
+            dup2(pipe_fd[0], STDIN_FILENO);
+            close(pipe_fd[0]);
+            close(pipe_fd[1]);
+
+            // Redirect standard output to the file 'midterm.txt'
+            freopen("midterm.txt", "w", stdout);
+
+            // Execute the 'grep "bash"' command
+            execlp("grep", "grep", "bash", NULL);
+
+            perror("execlp failed");
+            exit(EXIT_FAILURE);
+        } else {  // Parent process
+            close(pipe_fd[0]);  // Close the read end of the pipe
+
+            // Wait for both child processes to complete
+            waitpid(child_pid_ps, NULL, 0);
+            waitpid(child_pid_grep, NULL, 0);
+        }
+    }
+
+    return 0;
+}
+
