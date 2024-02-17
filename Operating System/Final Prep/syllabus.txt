@@ -1,0 +1,8 @@
+1- Threads (prog + Theory) (Creating)
+2- Synchronization of classical problems.
+3- Algo/Suedo Code of classical problms
+4- Main Memory & their numerical
+5- Segmentation
+6- Paging & their numerical
+7- Page Replacement Algo
+8- FIFO, Optimal Replacement, LRC
