@@ -30,4 +30,70 @@ created?
 
 Answer: 
 
-    
+
+Q4 -> Can a multithreaded solution using multiple user level threads achieve better performance on a multiprocessor
+system than on a single processor system? explain.
+
+Q5 -> Provide two programming examples in which multithreading provides better performance than a single threaded solution.
+
+Q6 -> What is starvation and deadlock?
+
+Answer: 
+
+    Starvation: Starvation occurs in concurrent systems when a process is unable to gain necessary resources (such as CPU time, memory, or access to a critical section) and is therefore unable to progress despite being ready to execute. This typically happens when resource allocation policies favor certain processes over others, leading to some processes being indefinitely delayed. For example, in a system using a first-come-first-served scheduling policy, long-running processes may prevent newer processes from ever getting a chance to execute, leading to starvation.
+
+    Deadlock: Deadlock is a situation in which two or more processes are unable to proceed because each is waiting for the other to release a resource. In other words, each process is holding a resource that the other process needs to proceed, creating a circular dependency. As a result, none of the processes can release their resources and progress, leading to a deadlock situation where they remain indefinitely blocked. Deadlocks can occur in various scenarios, such as when multiple processes contend for exclusive access to shared resources like locks or when processes wait for messages from one another in a distributed system without proper handling of message delays or failures.
+
+    Both starvation and deadlock are undesirable situations in concurrent systems, as they can lead to a loss of system efficiency or even system failure if not properly addressed. Various techniques such as resource scheduling algorithms, deadlock detection and recovery mechanisms, and proper design of concurrent algorithms are employed to mitigate the risk of starvation and deadlock.
+
+Q7 -> What are the conditions must be fulfilled by the solution of critical section problem?
+
+Answer:
+
+    Mutual Exclusion
+        If process Pi is executing in its critical section, then no other processes can be
+        executing in their critical sections
+    Progress
+        Thread and/Process running in their remainder section should not participate in
+        decision making
+        Decision making should be indefinitely prolonged (timely manner)
+        If no process is executing in its critical section and there exist some processes that
+        wish to enter their critical section, then the selection of the processes that will
+        enter the critical section next cannot be postponed indefinitely
+    Bounded Waiting
+        A bound must exist on the number of times that other processes are allowed to
+        enter their critical sections after a process has made a request to enter its critical
+        section and before that request is granted
+        Assume that each process executes at a nonzero speed
+        No assumption concerning relative speed of the n processes.
+
+Q8 -> To maintain relationship between kernel and user threads explain the
+multithreading models.
+
+Answer: 
+
+Multithreading models define how threads are created, managed, and scheduled in a system, and they can vary based on the relationship between kernel-level threads (managed by the operating system) and user-level threads (managed by a user-level thread library). There are several multithreading models:
+
+Many-to-One Model (User-Level Threads):
+
+In this model, many user-level threads are mapped to a single kernel-level thread.
+The kernel is not aware of individual user-level threads, so all thread management and scheduling are handled by the user-level thread library.
+While this model can be lightweight and efficient because thread management is done entirely in user space, it suffers from drawbacks such as an inability to fully utilize multi-core processors and susceptibility to blocking system calls, which can lead to poor performance.
+One-to-One Model (Kernel-Level Threads):
+
+In the one-to-one model, each user-level thread corresponds to a separate kernel-level thread.
+The operating system schedules and manages each kernel-level thread individually, providing better parallelism and scalability across multiple processor cores.
+Context switching between threads typically involves more overhead compared to the many-to-one model due to involvement of the kernel.
+This model allows blocking system calls by one thread to not block the entire process, as other threads can continue execution.
+Many-to-Many Model (Hybrid Model):
+
+The many-to-many model attempts to combine the benefits of both the many-to-one and one-to-one models.
+It allows mapping multiple user-level threads to a smaller or equal number of kernel-level threads.
+The user-level thread library is responsible for scheduling and managing user-level threads, while the kernel manages and schedules kernel-level threads.
+This model provides flexibility in terms of thread management and can optimize resource utilization while also allowing for concurrency and parallelism.
+Two-Level Model:
+
+The two-level model extends the many-to-many model by introducing multiple kernel-level thread pools.
+User-level threads are assigned to different kernel-level thread pools, each with its own scheduling policy.
+This model aims to provide finer-grained control over thread scheduling and resource allocation, allowing for better performance tuning and optimization in specific use cases.
+Each multithreading model has its own advantages and disadvantages, and the choice of model depends on factors such as the requirements of the application, the characteristics of the underlying hardware, and the desired trade-offs between performance, scalability, and simplicity of implementation.
