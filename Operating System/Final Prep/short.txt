@@ -1,0 +1,33 @@
+Q1 -> What are the two difference between user level and kernel level threads? under what circumstances is one better that other?
+
+Answer:
+
+    User-level threads are managed by user-level threads library without kernel support, while kernel-level threads are managed directly by the operating system kernel.
+
+    User-level threads are generally faster to create and manage since they don't require kernel intervention. However, kernel-level threads are more efficient in terms of parallelism and can take advantage of multiple CPU cores.
+
+    User-level threads are preferable when the application needs fine-grained control over scheduling and resource management. Kernel-level threads are better suited for applications that require true parallelism and need to make use of multiple CPU cores efficiently.
+
+Q2 -> Describe the steps taken by a kernel to context switching between kernel level threads?
+
+Answer: 
+    Kernel-level threads context switching involves the following steps:
+
+    Save Current Thread State: The kernel saves the current state of the executing thread, including its program counter, register values, and stack pointer, onto the thread's control block or kernel stack.
+
+    Select Next Thread to Execute: The kernel selects the next thread to execute from the pool of ready threads. This decision can be based on scheduling policies such as priority levels or time slices.
+
+    Restore Next Thread State: The kernel restores the saved state of the selected thread from its control block or kernel stack. This includes restoring the program counter, register values, and stack pointer to the state they were in when the thread was last running.
+
+    Update Kernel Data Structures: The kernel updates its data structures to reflect the change in the running state of threads, such as updating the state of the previously running thread to "ready" and marking the selected thread as "running".
+
+    Resume Execution of Next Thread: Finally, the kernel resumes execution of the selected thread from where it was previously paused. This allows the thread to continue its execution as if it was never interrupted.
+
+    These steps ensure a seamless transition between kernel-level threads, allowing the operating system to efficiently multiplex CPU resources among multiple threads.
+
+Q3 -> What resources are used when a thread is created? How do they differ from those used when a process is 
+created?
+
+Answer: 
+
+    
