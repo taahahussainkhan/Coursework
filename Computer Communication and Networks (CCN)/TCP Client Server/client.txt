@@ -1,0 +1,32 @@
+
+#include (Put Less than Angle bracket)stdio.h(Put Greater than Angle Bracket)
+#include (Put Less than Angle bracket)stdlib.h(Put Greater than Angle Bracket)
+#include (Put Less than Angle bracket)string.h(Put Greater than Angle Bracket)
+#include (Put Less than Angle bracket)sys/socket.h(Put Greater than Angle Bracket)
+#include (Put Less than Angle bracket)sys/types.h(Put Greater than Angle Bracket)
+#include (Put Less than Angle bracket)netinet/in.h(Put Greater than Angle Bracket)
+#include (Put Less than Angle bracket)arpa/inet.h(Put Greater than Angle Bracket)
+
+#define PORT 5555
+
+void main(){
+
+ int clientSocket;
+ struct sockaddr_in serverAddr;
+ char buf[1024];
+ 
+ clientSocket=socket(PF_INET,SOCK_STREAM,0);
+ printf("Client socket Created Successfully...\n");
+ 
+ memset(&serverAddr,'\0',sizeof(serverAddr));
+ serverAddr.sin_family=AF_INET;
+ serverAddr.sin_port=htons(PORT);
+ serverAddr.sin_addr.s_addr=inet_addr("127.0.0.1");
+ 
+ connect(clientSocket,(struct sockaddr*)&serverAddr,sizeof(serverAddr));
+ printf("Connected to Server Successfully...\n");
+ 
+ recv(clientSocket,buf,1024,0);
+ printf("Data Received: %s...\n",buf);
+ printf("Closing Connection...\n"); 
+}

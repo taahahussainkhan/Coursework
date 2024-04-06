@@ -1,0 +1,45 @@
+
+#include (Put Less than Angle bracket)stdio.h(Put Greater than Angle Bracket)
+#include (Put Less than Angle bracket)stdlib.h(Put Greater than Angle Bracket)
+#include (Put Less than Angle bracket)string.h(Put Greater than Angle Bracket)
+#include (Put Less than Angle bracket)sys/socket.h(Put Greater than Angle Bracket)
+#include (Put Less than Angle bracket)sys/types.h(Put Greater than Angle Bracket)
+#include (Put Less than Angle bracket)netinet/in.h(Put Greater than Angle Bracket)
+#include (Put Less than Angle bracket)arpa/inet.h(Put Greater than Angle Bracket)
+
+#define PORT 5555
+
+void main()
+{
+ int sockfd;
+ struct sockaddr_in serverAddr;
+ 
+ int newSocket;
+ struct sockaddr_in newAddr;
+ 
+ socklen_t addr_size;
+ char buf[1024];
+ 
+ sockfd=socket(PF_INET,SOCK_STREAM,0);
+ printf("Server socket Created Successfully...\n"); 
+ memset(&serverAddr,'\0',sizeof(serverAddr));
+ 
+ 
+ serverAddr.sin_family=AF_INET;
+ serverAddr.sin_port=htons(PORT);
+ serverAddr.sin_addr.s_addr=inet_addr("127.0.0.1");
+ 
+ bind(sockfd,(struct sockaddr*)&serverAddr,sizeof(serverAddr));
+ printf("Bind to Port Number %d\n",4455);
+ 
+ listen(sockfd,6);
+ printf("Listening...\n");
+ 
+ newSocket=accept(sockfd,(struct sockaddr*)&newAddr,&addr_size);
+ 
+ strcpy(buf,"HELLO FROM ME"); 
+ send(newSocket,buf,strlen(buf),0);
+ 
+ printf("Closing Connection...\n"); 
+} 
+==========================================================================

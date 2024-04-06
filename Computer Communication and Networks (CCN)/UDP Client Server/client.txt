@@ -1,0 +1,60 @@
+
+============================================================================
+#include (Put Less than Angle bracket)stdio.h(Put Greater than Angle Bracket)
+#include (Put Less than Angle bracket)stdlib.h(Put Greater than Angle Bracket)
+#include (Put Less than Angle bracket)string.h(Put Greater than Angle Bracket)
+#include (Put Less than Angle bracket)sys/socket.h(Put Greater than Angle Bracket)
+#include (Put Less than Angle bracket)sys/types.h(Put Greater than Angle Bracket)
+#include (Put Less than Angle bracket)netdb.h(Put Greater than Angle Bracket)
+#include (Put Less than Angle bracket)netinet/in.h(Put Greater than Angle Bracket)
+#include (Put Less than Angle bracket)arpa/inet.h(Put Greater than Angle Bracket)
+
+/* UDP client in the internet domain */
+void error(char *msg)
+{
+perror(msg);
+exit(0);
+}
+
+int main(int argc, char *argv[])
+{
+int sock, length, n;
+struct sockaddr_in server, from;
+struct hostent *hp;
+char buffer[256];
+if (argc != 3)
+{
+printf("Usage: server port\n");
+exit(1);
+}
+
+sock= socket(AF_INET, SOCK_DGRAM, 0);
+if(sock(Put Less than Angle bracket)0)
+{
+error("socket");
+}
+server.sin_family =AF_INET;
+hp=gethostbyname(argv[1]);
+if(hp==0)
+{
+error("Unknown Host");
+}
+bcopy((char *)hp-(Put Greater than Angle Bracket)h_addr,(char *)&server.sin_addr,hp-(Put Greater than Angle Bracket)h_length);
+server.sin_port = htons(atoi(argv[2]));
+length=sizeof(struct sockaddr_in);
+printf("Please enter the message: ");
+bzero(buffer,256);
+fgets(buffer,255,stdin);
+n=sendto(sock,buffer,strlen(buffer),0,&server,length);
+if (n (Put Less than Angle bracket) 0)
+{
+error("Sendto");
+}
+n = recvfrom(sock,buffer,256,0,&from, &length);
+if (n (Put Less than Angle bracket) 0)
+{
+error("recvfrom");
+}
+write(1,"Got an ack: ",12);
+write(1,buffer,n);
+}
