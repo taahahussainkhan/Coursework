@@ -19,27 +19,26 @@ int main() {
 	struct sockaddr_in	 servaddr; 
 
 	// Creating socket file descriptor 
-	if ( (sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0 ) { 
+	if ( (sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0 ) { 
 		perror("socket creation failed"); 
 		exit(EXIT_FAILURE); 
 	} 
 
-	memset(&servaddr, 0, sizeof(servaddr)); //memory set
+	memset(&servaddr, 0, sizeof(servaddr)); 
 	
 	// Filling server information 
 	servaddr.sin_family = AF_INET; 
-	servaddr.sin_port = htons(PORT); //host to network byte order
+	servaddr.sin_port = htons(PORT); 
 	servaddr.sin_addr.s_addr = INADDR_ANY; 
 	
-	connect (sockfd, (struct sockaddr*) &servaddr, sizeof(servaddr)); 
-	int n, len; 
+	int n, len=sizeof(servaddr); 
 	
-	send(sockfd, (const char *)hello, strlen(hello),0); 
+	sendto(sockfd, (const char *)hello, strlen(hello), 0, (const struct sockaddr *) &servaddr, sizeof(servaddr)); 
 	printf("Hello message sent.\n"); 
 		
-	n = recv(sockfd, (char *)buffer, MAXLINE, 0); 
+	n = recvfrom(sockfd, (char *)buffer, MAXLINE, 0, (struct sockaddr *) &servaddr, &len); 
 	buffer[n] = '\0'; 
-	printf("Server : %s\n", buffer); 
+	write(1,buffer,strlen(buffer)); 
 	
 	
 	close(sockfd); 
